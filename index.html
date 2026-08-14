@@ -678,7 +678,7 @@
         <span>🌍</span> RECYCLE · REDUCE CO₂
       </div>
       <span class="emoji-big">♻️</span>
-      <h1>ขวดพลาสติก 1 &nbsp;ใบ<br>ลด CO<sub class="co2-sub">2</sub> ได้เท่าไหร่?</h1>
+      <h1>ขวดพลาสติก 1 ใบ<br>ลด CO<sub class="co2-sub">2</sub> ได้เท่าไหร่?</h1>
       <p>
         รู้หรือไม่? การรีไซเคิลขวดพลาสติก <br>
         ช่วยลดก๊าซเรือนกระจกได้มากกว่าที่คิด!
@@ -720,9 +720,9 @@
         </div>
 
         <div class="stat-box">
-          <div class="label">♻️ รีไซเคิลได้</div>
+          <div class="label">📉 ลด CO₂ ได้</div>
           <div class="number" id="recycleRate">—</div>
-          <div class="unit">%</div>
+          <div class="unit">% เทียบกับพลาสติกใหม่</div>
         </div>
 
         <div class="stat-box">
@@ -734,7 +734,7 @@
 
       <!-- Graph Bar -->
       <div class="graph-section">
-        <div class="graph-title">📊 เปรียบเทียบ CO₂ ที่ลดได้</div>
+        <div class="graph-title">📊 เปรียบเทียบ % การลด CO₂</div>
         <div class="graph-bar-wrap" id="graphBars">
           <div class="graph-bar-row">
             <span class="graph-bar-label">PET</span>
@@ -818,30 +818,44 @@
   <!-- ===== JAVASCRIPT ===== -->
   <script>
     // ---------- ข้อมูลหลัก (fallback) ----------
+    // ค่าเหล่านี้อ้างอิงจากงานวิจัย LCA (Life Cycle Assessment) ที่เผยแพร่จริง:
+    // - PET: denkstatt GmbH / ALPLA-PET Recycling Team GmbH study (virgin PET = 2.15 kgCO2e/kg, ลดได้ 79%)
+    // - HDPE/PP: Franklin Associates, "Life Cycle Impacts for Postconsumer Recycled Resins:
+    //   PET, HDPE and PP" (2018/2020) — รีไซเคิลลดคาร์บอนได้ราว 70% เทียบกับเรซินใหม่
+    // หมายเหตุ: "recycleRate" ในที่นี้หมายถึง % การลดการปล่อย CO₂ เมื่อเทียบกับพลาสติกใหม่
+    // (ไม่ใช่อัตราการเก็บกลับ/คัดแยกขยะจริงในประเทศไทย ซึ่งต่ำกว่านี้มาก)
+    //
+    // น้ำหนักขวด: อ้างอิงขวดน้ำดื่ม 600ml จากผู้ผลิตในไทย
+    // - PET: ขวดน้ำดื่ม PET 600ml จริงในตลาดไทย หนักประมาณ 16-18 กรัม (Winstar, Chinoplaspack,
+    //   Banchongpack) ใช้ค่าเฉลี่ย 17 กรัม
+    // - HDPE/PP: ตลาดไทยแทบไม่ผลิตขวดน้ำดื่ม 600ml จาก HDPE หรือ PP จริง (HDPE มักใช้ทำแกลลอน/
+    //   ขวดนม-น้ำยา ส่วน PP มักใช้ทำขวดบรรจุร้อน เช่น ชานม/น้ำผลไม้ ขนาดเล็กกว่า) ตัวเลขน้ำหนักสำหรับ
+    //   สองชนิดนี้จึงเป็นค่าประมาณจากสัดส่วนน้ำหนัก/ปริมาตรของผลิตภัณฑ์ใกล้เคียงที่มีขายจริง ไม่ใช่ขวดน้ำ
+    //   600ml ที่มีขายจริงในท้องตลาด
     const DEFAULT_DATA = {
       PET: {
-        bottleWeightG: 25,
-        recycleRate: 70,
+        bottleWeightG: 17,
+        recycleRate: 79,
         virginCo2PerKg: 2.15,
-        co2PerBottle: 0.0376,
-        ref: "LCA: PET virgin 2.15 kgCO₂/kg, รีไซเคิลลด 70%",
-        tip: "♻️ PET 1 ขวด = ลด CO₂ 0.0376 kg เทียบเท่ากับปลูกต้นไม้ 1 ต้นใน 1 วัน"
+        co2PerBottle: 0.0289,
+        ref: "อ้างอิง: ขวด PET 600ml จริงในไทย (Winstar/Chinoplaspack/Banchongpack ~16-18g) · denkstatt GmbH/ALPLA-PET Recycling Team — virgin PET 2.15 kgCO₂e/kg, rPET ลดการปล่อยได้ 79%",
+        tip: "♻️ ขวดน้ำ PET 600ml (~17 กรัม) ช่วยลด CO₂ ได้ราว 0.029 kg เมื่อเทียบกับการผลิต PET ใหม่"
       },
       HDPE: {
-        bottleWeightG: 30,
-        recycleRate: 65,
+        bottleWeightG: 22,
+        recycleRate: 70,
         virginCo2PerKg: 1.85,
-        co2PerBottle: 0.0361,
-        ref: "LCA: HDPE virgin 1.85 kgCO₂/kg, รีไซเคิลลด 65%",
-        tip: "🧴 HDPE รีไซเคิลได้ง่าย ใช้ทำท่อและผลิตภัณฑ์ที่แข็งแรง"
+        co2PerBottle: 0.0285,
+        ref: "อ้างอิง: Franklin Associates/APR 2018-2020 — HDPE ลดคาร์บอนได้ราว 70%; น้ำหนักประมาณจากสัดส่วนขวด HDPE ขนาดเล็กในไทย (ไม่มีขวดน้ำดื่ม 600ml HDPE ขายจริงในตลาด — HDPE ส่วนใหญ่ใช้ทำแกลลอน/ขวดนม-น้ำยา)",
+        tip: "🧴 ในไทยแทบไม่มีขวดน้ำดื่ม 600ml ที่ทำจาก HDPE จริง — วัสดุนี้มักใช้ทำแกลลอนน้ำและขวดน้ำยาแทน"
       },
       PP: {
-        bottleWeightG: 28,
-        recycleRate: 55,
+        bottleWeightG: 58,
+        recycleRate: 70,
         virginCo2PerKg: 1.95,
-        co2PerBottle: 0.0300,
-        ref: "LCA: PP virgin 1.95 kgCO₂/kg, รีไซเคิลลด 55%",
-        tip: "📦 PP รีไซเคิลได้ แต่ต้องคัดแยกอย่างดี ใช้ทำชิ้นส่วนรถยนต์"
+        co2PerBottle: 0.0792,
+        ref: "อ้างอิง: Franklin Associates/APR 2018-2020 — PP ลดคาร์บอนได้ราว 70%; น้ำหนักประมาณจากสัดส่วนขวด PP บรรจุร้อนขนาดเล็กในไทย (ไม่มีขวดน้ำดื่มเย็น 600ml PP ขายจริงในตลาด — PP ส่วนใหญ่ใช้ทำขวดบรรจุร้อน เช่น ชานม/น้ำผลไม้)",
+        tip: "📦 ในไทย PP มักใช้ทำขวดบรรจุร้อน (ชานม น้ำผลไม้) ไม่ใช่ขวดน้ำดื่มเย็น 600ml — ผนังขวดหนากว่า PET จึงหนักกว่ามาก"
       }
     };
 
@@ -879,16 +893,10 @@
       refEl.textContent = item.ref || 'อ้างอิงจาก LCA';
       tipEl.textContent = item.tip || '♻️ ทุกขวดที่รีไซเคิลช่วยลดโลกร้อน';
 
-      const allValues = [
-        (data.PET || DEFAULT_DATA.PET).co2PerBottle,
-        (data.HDPE || DEFAULT_DATA.HDPE).co2PerBottle,
-        (data.PP || DEFAULT_DATA.PP).co2PerBottle
-      ];
-      const maxVal = Math.max(...allValues, 0.001);
-
-      animateBar(barPET, ((data.PET || DEFAULT_DATA.PET).co2PerBottle / maxVal * 100));
-      animateBar(barHDPE, ((data.HDPE || DEFAULT_DATA.HDPE).co2PerBottle / maxVal * 100));
-      animateBar(barPP, ((data.PP || DEFAULT_DATA.PP).co2PerBottle / maxVal * 100));
+      // แสดง % การลด CO₂ (recycleRate) ของแต่ละชนิดเทียบกันตรงๆ เพราะเป็นหน่วย % อยู่แล้ว
+      animateBar(barPET, (data.PET || DEFAULT_DATA.PET).recycleRate);
+      animateBar(barHDPE, (data.HDPE || DEFAULT_DATA.HDPE).recycleRate);
+      animateBar(barPP, (data.PP || DEFAULT_DATA.PP).recycleRate);
 
       document.querySelectorAll('#typeSelector button').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.type === type);
